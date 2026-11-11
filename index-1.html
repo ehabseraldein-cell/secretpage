@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>❤️</title>
+<style>
+  :root { --pink:#ff4d8d; --bg1:#12072e; --bg2:#2a0f4f; --glass:rgba(255,255,255,.07); --line:rgba(255,255,255,.16); }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; height:100%; }
+  body { font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",sans-serif; background:radial-gradient(circle at 50% 0%,var(--bg2),var(--bg1) 70%); color:#fff; overflow:hidden; }
+
+  .heart { position:fixed; bottom:-40px; opacity:.7; pointer-events:none; animation:rise linear forwards; z-index:0; }
+  @keyframes rise { to { transform:translateY(-115vh) rotate(25deg); opacity:0; } }
+  .burst { position:fixed; pointer-events:none; z-index:50; font-size:22px; animation:burst 1s ease-out forwards; }
+  @keyframes burst { to { transform:translate(var(--dx),var(--dy)) scale(1.4); opacity:0; } }
+
+  /* قفل */
+  #lock { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; z-index:2; }
+  #lock.hide { display:none; }
+  .card { width:100%; max-width:380px; text-align:center; background:var(--glass); border:1px solid var(--line); border-radius:28px; padding:28px 22px; backdrop-filter:blur(8px); }
+  .avatar { width:130px; height:130px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,.35); margin:0 auto 14px; display:block; background:#3a1d66; }
+  h1 { margin:8px 0; font-size:28px; }
+  p.sub { margin:6px 0 18px; opacity:.8; font-size:15px; }
+  input { width:100%; padding:14px; border-radius:14px; border:1.5px solid rgba(255,255,255,.35); background:rgba(0,0,0,.3); color:#fff; font-size:18px; text-align:center; outline:none; margin-bottom:12px; }
+  input:focus { border-color:var(--pink); }
+  button.main { width:100%; padding:14px; border:0; border-radius:14px; font-size:17px; color:#fff; cursor:pointer; background:linear-gradient(90deg,#ff4d8d,#a24dff); }
+  .err { color:#ff9db8; min-height:22px; font-size:14px; margin-top:8px; }
+  .shake { animation:shake .4s; }
+  @keyframes shake { 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
+
+  /* الصفحة الرئيسية */
+  #main { position:fixed; inset:0; overflow-y:auto; display:none; z-index:1; scroll-behavior:smooth; }
+  #main.show { display:block; animation:fade .8s ease; }
+  @keyframes fade { from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;} }
+  .wrap { max-width:460px; margin:0 auto; padding:24px 16px 130px; text-align:center; }
+  .datepill { display:inline-block; background:rgba(0,0,0,.45); padding:10px 22px; border-radius:30px; font-size:20px; font-weight:700; direction:ltr; box-shadow:0 0 20px rgba(255,77,141,.25); }
+  .title { font-size:30px; font-weight:700; margin:34px 0 18px; }
+  .panel { background:var(--glass); border:1px solid var(--line); border-radius:28px; padding:18px 12px; backdrop-filter:blur(6px); }
+  .panel .cap { opacity:.85; margin-bottom:14px; font-size:16px; }
+  .counter { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .counter .box { background:rgba(255,255,255,.08); border-radius:18px; padding:14px 4px; }
+  .counter .num { font-size:30px; font-weight:700; }
+  .counter .lbl { font-size:12px; opacity:.7; margin-top:2px; }
+  .counter .row2 { grid-column:span 4; display:flex; justify-content:center; gap:10px; }
+  .counter .row2 .box { width:calc(25% - 5px); }
+
+  .hint { font-size:20px; margin:46px 0 16px; }
+  .lovebtn { display:flex; align-items:center; justify-content:center; gap:14px; width:100%; padding:20px; margin-bottom:12px; border:1px solid var(--line); border-radius:22px; background:var(--glass); color:#fff; font-size:20px; cursor:pointer; transition:transform .15s, background .3s; font-family:inherit; }
+  .lovebtn:active { transform:scale(.97); }
+  .lovebtn.done { background:linear-gradient(90deg,rgba(255,77,141,.35),rgba(162,77,255,.35)); }
+  .lovebtn .ic { color:#ff7fb0; }
+  .reply { min-height:0; font-size:19px; margin:4px 0 8px; opacity:0; transition:opacity .5s; }
+  .reply.on { opacity:1; min-height:30px; }
+
+  .cardsTitle { font-size:26px; margin:46px 0 16px; }
+  .cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; direction:ltr; }
+  .cards .face { direction:rtl; }
+  .flip { perspective:900px; height:190px; cursor:pointer; }
+  .flip .in { position:relative; width:100%; height:100%; transition:transform .7s; transform-style:preserve-3d; }
+  .flip.open .in { transform:rotateY(180deg); }
+  .face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:26px; border:1px solid rgba(255,77,141,.45); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14px; box-shadow:0 0 18px rgba(255,77,141,.15) inset; }
+  .front { background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(60,20,100,.5)); }
+  .front .circ { width:70px; height:70px; border-radius:50%; background:rgba(255,255,255,.07); display:flex; align-items:center; justify-content:center; font-size:30px; margin-bottom:14px; }
+  .front .lb { font-size:15px; }
+  .back { transform:rotateY(180deg); background:linear-gradient(160deg,rgba(255,77,141,.35),rgba(110,40,200,.5)); font-size:16px; line-height:1.7; }
+
+  .gallery { margin-top:46px; }
+  .gtitle { font-size:24px; margin-bottom:16px; }
+  figure.ph { margin:0 0 18px; background:var(--glass); border:1px solid var(--line); border-radius:28px; padding:12px 12px 4px; }
+  figure.ph canvas { width:100%; height:auto; border-radius:20px; display:block; }
+  figure.ph figcaption { padding:14px 6px 12px; font-size:18px; }
+
+  .final { margin:40px 0 10px; font-size:28px; font-weight:700; }
+
+  /* المشغل */
+  #player { position:fixed; left:12px; right:12px; bottom:12px; max-width:440px; margin:0 auto; z-index:20; display:none; align-items:center; gap:12px; padding:12px 16px; border-radius:24px; background:rgba(25,10,55,.85); border:1px solid var(--line); backdrop-filter:blur(10px); }
+  #player.show { display:flex; }
+  #pbtn { width:46px; height:46px; border-radius:50%; border:0; background:rgba(255,255,255,.14); color:#fff; font-size:18px; cursor:pointer; flex:none; }
+  #pinfo { flex:1; text-align:right; }
+  #ptitle { font-size:16px; font-weight:700; }
+  #pstat { font-size:12px; opacity:.75; margin:2px 0 6px; }
+  #pstat i { display:inline-block; width:8px; height:8px; border-radius:50%; background:#3ddc84; margin-left:5px; }
+  #bar { height:4px; border-radius:4px; background:rgba(255,255,255,.18); overflow:hidden; direction:ltr; }
+  #fill { height:100%; width:0; background:linear-gradient(90deg,#7c6cff,#ff4d8d); }
+</style>
+</head>
+<body>
+
+<!-- شاشة القفل -->
+<div id="lock">
+  <div class="card" id="lockCard">
+    <img class="avatar" src="photo.jpg" alt="" onerror="this.style.display='none'">
+    <h1>جاهزة؟ 🤔</h1>
+    <p class="sub">❤️ كل اللي هنا هيفضل بيني وبينك طول العمر</p>
+    <input id="pw" type="text" placeholder="الباسورد" autocomplete="off">
+    <button class="main" id="openBtn">يلا بسرعة افتحي 😂❤️</button>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+
+<!-- الصفحة -->
+<div id="main">
+  <div class="wrap">
+    <div class="datepill" id="datePill"></div>
+    <div class="title">بداية عمري معاكي ❤️</div>
+
+    <div class="panel">
+      <div class="cap">❤️ هيفضل شغال طول ما احنا مع بعض 🕒</div>
+      <div class="counter">
+        <div class="box"><div class="num" id="cY">0</div><div class="lbl">سنة</div></div>
+        <div class="box"><div class="num" id="cM">0</div><div class="lbl">شهر</div></div>
+        <div class="box"><div class="num" id="cD">0</div><div class="lbl">يوم</div></div>
+        <div class="box"><div class="num" id="cH">0</div><div class="lbl">ساعة</div></div>
+        <div class="row2">
+          <div class="box"><div class="num" id="cMin">0</div><div class="lbl">دقيقة</div></div>
+          <div class="box"><div class="num" id="cS">0</div><div class="lbl">ثانية</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint">اقفي هنا شوية متجريش 😂</div>
+    <div id="loveBtns"></div>
+    <div class="reply" id="reply"></div>
+
+    <div class="cardsTitle">دوسي على الكروت 😉❤️</div>
+    <div class="cards" id="cards"></div>
+
+    <div class="gallery">
+      <div class="gtitle">حياتي بتختصر هنا 👇</div>
+      <div id="photos"></div>
+    </div>
+
+    <div class="final" id="finalText"></div>
+  </div>
+</div>
+
+<!-- مشغل الأغنية -->
+<div id="player">
+  <button id="pbtn" aria-label="تشغيل/إيقاف">❚❚</button>
+  <div id="pinfo">
+    <div id="ptitle">اغنيتنا ❤️</div>
+    <div id="pstat"><i></i><span id="pstatTxt">تشغيل الآن...</span></div>
+    <div id="bar"><div id="fill"></div></div>
+  </div>
+</div>
+<audio id="song" src="song.mp3" loop></audio>
+
+<script>
+/* ============ عدّل هنا فقط ============ */
+const CONFIG = {
+  name: "عابره",
+  password: "بتي",
+  firstMeet: "2025-11-07",          // السنة-الشهر-اليوم
+
+  // الأزرار الثلاثة: النص على الزر + الرد اللي يظهر بعد الضغط
+  loveButtons: [
+    { icon: "♡",  text: "بحبك",      reply: "وأنا أكتر منك ❤️" },
+    { icon: "✧",  text: "بموت فيكي", reply: "بعد الشر عليكي 🥹❤️" },
+    { icon: "🔒", text: "بعشقك",     reply: "وإنتي عشقي الأول والأخير ✨" }
+  ],
+
+  // الكروت الأربعة: العنوان على الوجه + الرسالة في الخلف
+  cards: [
+    { label: "اول كارت اهوووو 🙋😂", msg: "محبتش" },
+    { label: "التاني",                 msg: "ولا بحب" },
+    { label: "التالت",                 msg: "ولا هحب حد" },
+    { label: "الرابع",                 msg: "زي ما حبيتك يا اجمل حاجة ف حياتي ❤️" }
+  ],
+
+  // الصور: ضع الملفات بجانب index.html بنفس الأسماء. أي صورة ناقصة تختفي لوحدها.
+  photos: [
+    // rotate: تدوير الصورة (90 أو 180 أو 270) إذا ظهرت مائلة. cropBottom: نسبة % تُقصّ من أسفل الصورة.
+    { src: "IMG-20251119-WA0041.jpg", rotate: 0, caption: "جنبك بحس إن الدنيا كلها أمان ❤️" },
+    { src: "IMG-20251228-WA0042.jpg", rotate: 0, caption: "كل لحظة معاكي بتبقى أحلى ذكرى ✨" },
+    { src: "IMG-20260804-WA0003.jpg", rotate: 0, caption: "كل لحظة في عمري بتمنى تكون معاكي ❤️" },
+    { src: "IMG-20261011-WA0033.jpg", rotate: 0, caption: "بحبك يا نورعيني ❤️" },
+    { src: "IMG-20261108-WA0006.jpg", rotate: 0, caption: "معاكي الدنيا أحلى وأجمل 💜" },
+    { src: "IMG-20261108-WA0008.jpg", rotate: 0, caption: "يا رب أفضل جنبك العمر كله ✨" }
+  ],
+
+  finalText: "بحبك يا عابره ❤️"
+};
+/* ====================================== */
+
+const $ = id => document.getElementById(id);
+const norm = s => s.trim().toLowerCase();
+
+/* قلوب متطايرة */
+setInterval(() => {
+  const h = document.createElement('div');
+  h.className = 'heart';
+  h.textContent = ['❤️','💜','💖','✨'][Math.floor(Math.random()*4)];
+  h.style.left = Math.random()*100 + 'vw';
+  h.style.fontSize = (14 + Math.random()*22) + 'px';
+  h.style.animationDuration = (6 + Math.random()*6) + 's';
+  document.body.appendChild(h);
+  setTimeout(() => h.remove(), 12500);
+}, 600);
+
+function burstAt(x, y) {
+  for (let i = 0; i < 10; i++) {
+    const b = document.createElement('div');
+    b.className = 'burst';
+    b.textContent = ['❤️','💖','✨'][i % 3];
+    b.style.left = x + 'px'; b.style.top = y + 'px';
+    b.style.setProperty('--dx', (Math.random()*160 - 80) + 'px');
+    b.style.setProperty('--dy', (-40 - Math.random()*120) + 'px');
+    document.body.appendChild(b);
+    setTimeout(() => b.remove(), 1000);
+  }
+}
+
+/* تعبئة المحتوى */
+const start = new Date(CONFIG.firstMeet + "T00:00:00");
+$('datePill').textContent = CONFIG.firstMeet;
+$('finalText').textContent = CONFIG.finalText;
+
+CONFIG.loveButtons.forEach(b => {
+  const el = document.createElement('button');
+  el.className = 'lovebtn';
+  el.innerHTML = `<span class="ic">${b.icon}</span><span>${b.text}</span><span class="ic">${b.icon}</span>`;
+  el.onclick = e => {
+    el.classList.add('done');
+    const r = $('reply'); r.classList.remove('on'); void r.offsetWidth;
+    r.textContent = b.reply; r.classList.add('on');
+    burstAt(e.clientX || innerWidth/2, e.clientY || innerHeight/2);
+  };
+  $('loveBtns').appendChild(el);
+});
+
+CONFIG.cards.forEach(c => {
+  const f = document.createElement('div');
+  f.className = 'flip';
+  f.innerHTML = `<div class="in">
+    <div class="face front"><div class="circ">♡</div><div class="lb">${c.label}</div></div>
+    <div class="face back">${c.msg}</div></div>`;
+  f.onclick = e => {
+    f.classList.toggle('open');
+    if (f.classList.contains('open')) burstAt(e.clientX, e.clientY);
+  };
+  $('cards').appendChild(f);
+});
+
+CONFIG.photos.forEach(p => {
+  const fig = document.createElement('figure');
+  fig.className = 'ph';
+  fig.style.display = 'none';
+  const cap = document.createElement('figcaption');
+  cap.textContent = p.caption;
+  fig.appendChild(cap);
+  $('photos').appendChild(fig);
+
+  const img = new Image();
+  img.onerror = () => fig.remove();
+  img.onload = () => {
+    const w = img.naturalWidth, h = img.naturalHeight;
+    const sh = h * (1 - (p.cropBottom || 0) / 100);        // قصّ من أسفل الصورة
+    const r = (((p.rotate || 0) % 360) + 360) % 360;       // تدوير 0/90/180/270
+    const swap = (r === 90 || r === 270);
+    const cv = document.createElement('canvas');
+    cv.width = swap ? sh : w;
+    cv.height = swap ? w : sh;
+    const ctx = cv.getContext('2d');
+    ctx.translate(cv.width / 2, cv.height / 2);
+    ctx.rotate(r * Math.PI / 180);
+    ctx.drawImage(img, 0, 0, w, sh, -w / 2, -sh / 2, w, sh);
+    fig.insertBefore(cv, cap);
+    fig.style.display = '';
+  };
+  img.src = p.src;
+});
+
+/* العداد الحي */
+function tick() {
+  const now = new Date();
+  let y = now.getFullYear() - start.getFullYear();
+  let t = new Date(start); t.setFullYear(start.getFullYear() + y);
+  if (t > now) { y--; t = new Date(start); t.setFullYear(start.getFullYear() + y); }
+  let m = 0;
+  while (true) {
+    const n = new Date(t); n.setMonth(t.getMonth() + 1);
+    if (n > now) break;
+    t = n; m++;
+  }
+  let rem = Math.max(0, now - t);
+  const d = Math.floor(rem / 864e5); rem %= 864e5;
+  const h = Math.floor(rem / 36e5);  rem %= 36e5;
+  const mi = Math.floor(rem / 6e4);  rem %= 6e4;
+  const s = Math.floor(rem / 1000);
+  $('cY').textContent = Math.max(0, y); $('cM').textContent = m; $('cD').textContent = d;
+  $('cH').textContent = h; $('cMin').textContent = mi; $('cS').textContent = s;
+}
+tick(); setInterval(tick, 1000);
+
+/* فتح القفل */
+const song = $('song');
+function tryOpen() {
+  if (norm($('pw').value) === norm(CONFIG.password)) {
+    $('lock').classList.add('hide');
+    $('main').classList.add('show');
+    song.play().then(() => { $('player').classList.add('show'); setPlayUI(true); })
+      .catch(() => {});
+    // لو لا يوجد ملف أغنية لا نُظهر المشغل
+    song.addEventListener('error', () => $('player').classList.remove('show'));
+    setTimeout(() => { if (!song.error) $('player').classList.add('show'); }, 400);
+  } else {
+    $('err').textContent = 'الباسورد غلط 😅 جربي تاني';
+    $('lockCard').classList.remove('shake'); void $('lockCard').offsetWidth;
+    $('lockCard').classList.add('shake');
+  }
+}
+$('openBtn').onclick = tryOpen;
+$('pw').addEventListener('keydown', e => { if (e.key === 'Enter') tryOpen(); });
+
+/* المشغل */
+function setPlayUI(playing) {
+  $('pbtn').textContent = playing ? '❚❚' : '▶';
+  $('pstatTxt').textContent = playing ? 'تشغيل الآن...' : 'متوقف';
+}
+$('pbtn').onclick = () => { if (song.paused) { song.play(); setPlayUI(true); } else { song.pause(); setPlayUI(false); } };
+song.addEventListener('timeupdate', () => {
+  if (song.duration) $('fill').style.width = (song.currentTime / song.duration * 100) + '%';
+});
+</script>
+</body>
+</html>
